@@ -94,8 +94,15 @@ Only `commands.env` knows the real tools. Changing stack means changing one file
    ```
    Check that `git branch` shows only `main`. Don't pick a stack yet; that happens in Phase 3.
    Until then the hooks and CI do nothing.
-2. On GitHub, protect `main`: require a PR, require the checks `quality`, `e2e`, `secrets`, `audit`
-   to pass, require branches to be up to date, and block force-pushes.
+2. Push to GitHub (`gh repo create <name> --public --source=. --remote=origin --push`), then
+   protect `main` in Settings → Rules → Rulesets → New branch ruleset:
+   - Name `protect-main`, Enforcement **Active**, empty bypass list, target **Include default branch**.
+   - Rules: Restrict deletions; Block force pushes; Require a pull request (approvals **0** if you
+     work alone, since you can't approve your own PR); Require status checks `quality`, `e2e`,
+     `secrets`, `audit` (source GitHub Actions) with "require branches to be up to date".
+   - The checks are only selectable after CI has run once: open any PR first (Dependabot's will do).
+   - Rulesets are **not enforced on private repos on a free plan**, and dependency review, CodeQL
+     and secret scanning also need a public repo or a paid plan. Make the repo public, or pay.
 3. In GitHub → Settings → Code security, turn on CodeQL **default setup**, secret scanning with
    push protection, and Dependabot alerts.
 4. Install [mise](https://mise.jdx.dev) locally. It installs the tool versions the preset pins, the
@@ -105,7 +112,7 @@ Only `commands.env` knows the real tools. Changing stack means changing one file
 6. Optional MCP servers for Claude Code: Playwright MCP (lets Claude look at a running web UI), a
    docs server such as Context7 (current library docs), and 📱 a mobile simulator MCP if you use one.
 
-🚦 **Gate:** `/hooks` in Claude Code shows the two hooks, and branch protection is on.
+🚦 **Gate:** `/hooks` in Claude Code shows the two hooks, and the `main` ruleset is Active and enforced.
 
 ---
 
