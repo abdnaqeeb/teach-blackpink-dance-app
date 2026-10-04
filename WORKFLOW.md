@@ -111,12 +111,18 @@ Only `commands.env` knows the real tools. Changing stack means changing one file
    - Code scanning → CodeQL → **Default** setup. Don't add a CodeQL workflow file.
    - Private vulnerability reporting (useful for public repos).
    Then re-run the failed checks on any open PR.
+
+   Dependabot opens PRs that bump the Actions versions. Merge them one at a time. If one conflicts,
+   comment `@dependabot rebase` (or `@dependabot recreate` if it says the PR was edited). Don't use
+   "Update branch" or the web conflict editor on Dependabot PRs: after that it stops maintaining them.
 4. Install [mise](https://mise.jdx.dev) locally. It installs the tool versions the preset pins, the
    same ones CI uses. On Windows: `winget install jdx.mise`.
 5. Optional: for the automated Claude PR review workflow, install the Claude GitHub App
    (https://github.com/apps/claude) on the repo and add `ANTHROPIC_API_KEY` (or
-   `CLAUDE_CODE_OAUTH_TOKEN`) as a repo secret. Until then the `Claude review` check fails on every
-   PR; it isn't required, so it doesn't block merging.
+   `CLAUDE_CODE_OAUTH_TOKEN`) as a repo secret. Each review uses API credits or subscription quota,
+   and it never runs on Dependabot PRs (they can't read repo secrets). To skip it, run
+   `gh workflow disable "Claude review"` and review locally with `/code-review` instead; otherwise
+   the check fails on every PR (it isn't required, so it doesn't block merging).
 6. Optional MCP servers for Claude Code: Playwright MCP (lets Claude look at a running web UI), a
    docs server such as Context7 (current library docs), and 📱 a mobile simulator MCP if you use one.
 
