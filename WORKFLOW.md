@@ -103,12 +103,20 @@ Only `commands.env` knows the real tools. Changing stack means changing one file
    - The checks are only selectable after CI has run once: open any PR first (Dependabot's will do).
    - Rulesets are **not enforced on private repos on a free plan**, and dependency review, CodeQL
      and secret scanning also need a public repo or a paid plan. Make the repo public, or pay.
-3. In GitHub → Settings → Code security, turn on CodeQL **default setup**, secret scanning with
-   push protection, and Dependabot alerts.
+3. In GitHub → Settings → Advanced Security (formerly "Code security"), turn on:
+   - **Dependency graph**: without it the `dependency-review` check fails ("not supported on this
+     repository").
+   - Dependabot alerts and Dependabot security updates.
+   - Secret Protection (secret scanning) with **push protection**.
+   - Code scanning → CodeQL → **Default** setup. Don't add a CodeQL workflow file.
+   - Private vulnerability reporting (useful for public repos).
+   Then re-run the failed checks on any open PR.
 4. Install [mise](https://mise.jdx.dev) locally. It installs the tool versions the preset pins, the
-   same ones CI uses.
-5. Optional: add `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) as a repo secret for the
-   automated Claude PR review workflow.
+   same ones CI uses. On Windows: `winget install jdx.mise`.
+5. Optional: for the automated Claude PR review workflow, install the Claude GitHub App
+   (https://github.com/apps/claude) on the repo and add `ANTHROPIC_API_KEY` (or
+   `CLAUDE_CODE_OAUTH_TOKEN`) as a repo secret. Until then the `Claude review` check fails on every
+   PR; it isn't required, so it doesn't block merging.
 6. Optional MCP servers for Claude Code: Playwright MCP (lets Claude look at a running web UI), a
    docs server such as Context7 (current library docs), and 📱 a mobile simulator MCP if you use one.
 
