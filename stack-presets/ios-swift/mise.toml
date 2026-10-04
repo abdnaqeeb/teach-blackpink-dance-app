@@ -1,0 +1,4 @@
+[tools]
+swiftlint = "latest"
+osv-scanner = "latest"
+# Xcode itself comes from the macOS runner / your Mac (select with xcode-select).

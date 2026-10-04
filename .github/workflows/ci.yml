@@ -1,0 +1,98 @@
+# Stack-agnostic CI. Every step calls ./scripts/task.sh, which runs the commands in
+# .project/commands.env. Tool versions come from mise.toml.
+#
+# Repo variables (Settings → Secrets and variables → Actions → Variables), all optional:
+#   CI_RUNNER    runner for quality/build, default ubuntu-latest (use macos-latest for iOS)
+#   E2E_RUNNER   runner for e2e, default ubuntu-latest (macos-latest for iOS simulators)
+#   E2E_ENABLED  set to "false" to skip the e2e job (e.g. until mobile e2e is set up)
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: "true"
+  # Test-only database. Delete the `services` blocks and this line if you have no database.
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/app_test
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: ${{ (vars.CI_RUNNER == '' || startsWith(vars.CI_RUNNER, 'ubuntu')) && 'postgres:17' || '' }}
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v2
+      - name: Setup
+        run: ./scripts/task.sh setup
+      - name: Format
+        run: ./scripts/task.sh format-check
+      - name: Lint
+        run: ./scripts/task.sh lint
+      - name: Typecheck
+        run: ./scripts/task.sh typecheck
+      - name: Migrate test DB
+        run: ./scripts/task.sh db-migrate
+      - name: Unit + integration tests (incl. permission matrix)
+        run: ./scripts/task.sh test
+      - name: Build
+        run: ./scripts/task.sh build
+
+  e2e:
+    name: e2e
+    if: vars.E2E_ENABLED != 'false'
+    needs: quality
+    runs-on: ${{ vars.E2E_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: ${{ (vars.E2E_RUNNER == '' || startsWith(vars.E2E_RUNNER, 'ubuntu')) && 'postgres:17' || '' }}
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v2
+      - run: ./scripts/task.sh setup
+      - run: ./scripts/task.sh test-e2e-setup
+      - run: ./scripts/task.sh db-migrate
+      - run: ./scripts/task.sh db-seed
+      - name: End-to-end tests (core flows + accessibility)
+        run: ./scripts/task.sh test-e2e
+        env:
+          # Test-mode credentials for your auth provider, stored as GitHub secrets.
+          E2E_AUTH_SECRET: ${{ secrets.E2E_AUTH_SECRET }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-report
+          path: |
+            playwright-report/
+            test-results/
+            e2e/playwright-report/
+            ~/.maestro/tests/
+          if-no-files-found: ignore
+          retention-days: 7

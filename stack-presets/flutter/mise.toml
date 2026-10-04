@@ -1,0 +1,4 @@
+[tools]
+flutter = "latest"       # pin to a specific stable version once chosen, e.g. "3.35.0-stable"
+osv-scanner = "latest"
+java = "temurin-17"      # for Android builds

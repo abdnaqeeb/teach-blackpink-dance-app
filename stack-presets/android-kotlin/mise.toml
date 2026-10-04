@@ -1,0 +1,5 @@
+[tools]
+java = "temurin-17"
+ktlint = "latest"
+osv-scanner = "latest"
+# Android SDK: preinstalled on GitHub Ubuntu runners; locally via Android Studio.

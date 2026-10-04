@@ -1,0 +1,5 @@
+[tools]
+go = "1.25"
+golangci-lint = "latest"
+goose = "latest"
+node = "24"          # only for the Playwright e2e package in ./e2e

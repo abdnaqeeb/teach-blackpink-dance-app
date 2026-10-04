@@ -1,0 +1,71 @@
+# --- env & secrets (all stacks) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.keystore
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+appsettings.*.local.json
+
+# --- Claude Code local state ---
+.claude/settings.local.json
+.claude/.stop-attempts
+
+# --- test & coverage output ---
+coverage/
+playwright-report/
+test-results/
+.audit-req.txt
+
+# --- Node / Expo ---
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+.expo/
+.vercel
+
+# --- Python ---
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# --- Go ---
+/bin/
+
+# --- .NET ---
+bin/
+obj/
+
+# --- Java / Kotlin / Android / Gradle ---
+.gradle/
+build/
+*.class
+local.properties
+.idea/
+*.iml
+.cxx/
+
+# --- Flutter / Dart ---
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# --- iOS / Xcode ---
+DerivedData/
+xcuserdata/
+Pods/
+*.xcworkspace/xcuserdata/
+
+.DS_Store

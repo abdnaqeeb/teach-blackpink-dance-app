@@ -1,0 +1,25 @@
+# Uncomment the ecosystem(s) your stack uses (each preset's STACK.md names it).
+# For several parts, add one entry per manifest folder (e.g. directory: /apps/mobile).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+
+  # - package-ecosystem: npm          # Node, Next.js, Expo / React Native
+  # - package-ecosystem: uv           # Python with uv (use "pip" for pip/poetry)
+  # - package-ecosystem: gomod        # Go
+  # - package-ecosystem: nuget        # .NET
+  # - package-ecosystem: gradle       # Java, Kotlin, Android
+  # - package-ecosystem: maven        # Java with Maven
+  # - package-ecosystem: pub          # Flutter / Dart
+  # - package-ecosystem: swift        # Swift Package Manager
+  # - package-ecosystem: cargo        # Rust
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #   open-pull-requests-limit: 5
+  #   groups:
+  #     minor-and-patch:
+  #       update-types: [minor, patch]

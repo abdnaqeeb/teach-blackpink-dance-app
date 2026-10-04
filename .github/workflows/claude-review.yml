@@ -1,0 +1,35 @@
+# OPTIONAL: automated Claude review comment on every PR (any stack).
+# Needs repo secret ANTHROPIC_API_KEY (or switch to claude_code_oauth_token: CLAUDE_CODE_OAUTH_TOKEN).
+# This is an extra reviewer, not a replacement for the human gates in CLAUDE.md.
+# Check https://github.com/anthropics/claude-code-action for the current inputs.
+name: Claude review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review PR #${{ github.event.pull_request.number }} in ${{ github.repository }}.
+            Read CLAUDE.md (including Stack specifics), docs/03-architecture.md (permission
+            matrix) and the story in docs/06-backlog.md referenced by the PR title. Apply the
+            checks in .claude/agents/security-reviewer.md and .claude/agents/architecture-reviewer.md.
+            Post ONE review comment with sections Must fix / Should fix / Notes, each item with
+            file:line. If nothing is wrong, say what you checked. Do not push commits.
+          claude_args: '--allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Read,Grep,Glob"'
