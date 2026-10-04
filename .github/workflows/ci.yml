@@ -40,7 +40,7 @@ jobs:
           --health-cmd "pg_isready -U postgres"
           --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: jdx/mise-action@v4
       - name: Setup
         run: ./scripts/task.sh setup
@@ -74,7 +74,7 @@ jobs:
           --health-cmd "pg_isready -U postgres"
           --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: jdx/mise-action@v4
       - run: ./scripts/task.sh setup
       - run: ./scripts/task.sh test-e2e-setup
