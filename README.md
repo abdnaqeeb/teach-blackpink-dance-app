@@ -29,7 +29,8 @@ Tool versions come from `mise.toml`, so local machines and CI use the same toolc
 A project with a mobile app and an API combines two presets in one `commands.env`.
 
 ## Quick start
-1. Copy everything into a new repo. Run `chmod +x scripts/task.sh .claude/hooks/*.sh`.
+1. Copy everything into a new repo on a `main` branch and make the scripts executable. The exact
+   commands, including Windows (Git Bash), are in WORKFLOW.md → Phase 0, step 1.
 2. Protect `main` on GitHub: require a PR and the checks `quality`, `e2e`, `secrets`, `audit`.
    Turn on CodeQL default setup, secret scanning and Dependabot alerts.
 3. Open Claude Code in the repo and say:

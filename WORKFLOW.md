@@ -81,8 +81,19 @@ Only `commands.env` knows the real tools. Changing stack means changing one file
 ## Phase 0 — Set up the template (once per project)
 
 🧑 Steps:
-1. Create the repo and copy in this template. Run `chmod +x scripts/task.sh .claude/hooks/*.sh`.
-   Don't pick a stack yet; that happens in Phase 3. Until then the hooks and CI do nothing.
+1. Create the repo and copy in this template. Run these in bash (macOS/Linux terminal, or
+   **Git Bash on Windows**; PowerShell has no `chmod` and doesn't expand `*.sh`):
+   ```bash
+   git config --global init.defaultBranch main   # once per machine, so repos start on main
+   git init                                      # skip if the repo already exists
+   git branch -M main                            # rename master → main if needed
+   chmod +x scripts/task.sh .claude/hooks/*.sh
+   git add -A
+   git update-index --chmod=+x scripts/task.sh .claude/hooks/*.sh   # records +x for Windows clones
+   git commit -m "Set up project template"
+   ```
+   Check that `git branch` shows only `main`. Don't pick a stack yet; that happens in Phase 3.
+   Until then the hooks and CI do nothing.
 2. On GitHub, protect `main`: require a PR, require the checks `quality`, `e2e`, `secrets`, `audit`
    to pass, require branches to be up to date, and block force-pushes.
 3. In GitHub → Settings → Code security, turn on CodeQL **default setup**, secret scanning with
